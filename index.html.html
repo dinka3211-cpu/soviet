@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Лето в Заре</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+
+        <!-- ЭКРАН ЗАСТАВКИ -->
+        <div id="splash" class="screen active">
+            <div class="splash-bg"></div>
+            <div class="splash-content">
+                <h1>ЛЕТО В ЗАРЕ</h1>
+                <p class="subtitle">Визуальная новелла</p>
+                <button class="btn primary" onclick="showSaveMenu()">▶ Играть</button>
+                <button class="btn" onclick="showGallery()">🖼 Галерея</button>
+                <button class="btn" onclick="showAchievements()">🏆 Достижения</button>
+                <button class="btn" onclick="showSettings()">⚙ Настройки</button>
+            </div>
+        </div>
+
+        <!-- ИГРОВОЙ ЭКРАН -->
+        <div id="game" class="screen">
+            <div class="hud">
+                <div class="hud-left">
+                    <span id="dayLabel">День 1</span>
+                    <span class="dot">·</span>
+                    <span id="timeLabel">Утро</span>
+                </div>
+                <div class="hud-right">
+                    <button class="icon-btn" onclick="toggleAudio()" id="audioBtn">🔊</button>
+                    <button class="icon-btn" onclick="showPauseMenu()">⏸</button>
+                </div>
+            </div>
+
+            <div class="affection-bar" id="affectionBar">
+                <div class="aff-item" data-hero="alice"><span>🔥</span><div class="bar"><div class="fill"></div></div></div>
+                <div class="aff-item" data-hero="lena"><span>📖</span><div class="bar"><div class="fill"></div></div></div>
+                <div class="aff-item" data-hero="uliana"><span>⚡</span><div class="bar"><div class="fill"></div></div></div>
+                <div class="aff-item" data-hero="slavya"><span>💛</span><div class="bar"><div class="fill"></div></div></div>
+            </div>
+
+            <div class="scene">
+                <div id="bg" class="bg"></div>
+                <div id="character" class="character"></div>
+                <div id="character2" class="character second"></div>
+            </div>
+
+            <div class="dialogue-box">
+                <div class="speaker" id="speaker"></div>
+                <div class="text" id="text"></div>
+                <div class="choices" id="choices"></div>
+            </div>
+        </div>
+
+        <!-- ЭКРАН КОНЦОВКИ -->
+        <div id="ending" class="screen">
+            <div class="ending-content">
+                <h1 id="endingTitle"></h1>
+                <p id="endingText"></p>
+                <button class="btn primary" onclick="restartGame()">Играть снова</button>
+            </div>
+        </div>
+
+        <!-- МОДАЛЬНЫЕ ОКНА -->
+
+        <!-- Меню слотов -->
+        <div id="saveMenu" class="modal">
+            <div class="modal-box">
+                <h2>Выбор сохранения</h2>
+                <div id="slotsList" class="slots"></div>
+                <button class="btn" onclick="closeModal('saveMenu')">Закрыть</button>
+            </div>
+        </div>
+
+        <!-- Пауза -->
+        <div id="pauseMenu" class="modal">
+            <div class="modal-box">
+                <h2>Пауза</h2>
+                <button class="btn primary" onclick="closeModal('pauseMenu')">▶ Продолжить</button>
+                <button class="btn" onclick="saveToSlot()">💾 Сохранить</button>
+                <button class="btn" onclick="restartGame()">🔄 В главное меню</button>
+            </div>
+        </div>
+
+        <!-- Галерея -->
+        <div id="gallery" class="modal">
+            <div class="modal-box wide">
+                <h2>Галерея</h2>
+                <div id="galleryGrid" class="gallery-grid"></div>
+                <button class="btn" onclick="closeModal('gallery')">Закрыть</button>
+            </div>
+        </div>
+
+        <!-- Достижения -->
+        <div id="achievements" class="modal">
+            <div class="modal-box wide">
+                <h2>Достижения</h2>
+                <div id="achList" class="ach-list"></div>
+                <button class="btn" onclick="closeModal('achievements')">Закрыть</button>
+            </div>
+        </div>
+
+        <!-- Настройки -->
+        <div id="settings" class="modal">
+            <div class="modal-box">
+                <h2>Настройки</h2>
+                <label class="setting">
+                    <span>Громкость музыки</span>
+                    <input type="range" id="musicVol" min="0" max="100" value="50">
+                </label>
+                <label class="setting">
+                    <span>Громкость эффектов</span>
+                    <input type="range" id="sfxVol" min="0" max="100" value="70">
+                </label>
+                <label class="setting">
+                    <span>Вибрация</span>
+                    <input type="checkbox" id="hapticToggle" checked>
+                </label>
+                <button class="btn primary" onclick="saveSettings(); closeModal('settings')">Сохранить</button>
+            </div>
+        </div>
+
+        <!-- Магазин Telegram Stars -->
+        <div id="shopModal" class="modal">
+            <div class="modal-box">
+                <h2>⭐ Премиум главы</h2>
+                <p class="shop-desc">Открой эксклюзивные сцены и альтернативные концовки!</p>
+                <div class="shop-items">
+                    <div class="shop-item">
+                        <div class="shop-info">
+                            <b>Глава 6: «Прощание»</b>
+                            <small>Ночная сцена на причале</small>
+                        </div>
+                        <button class="btn buy" onclick="buyChapter('chapter6', 50)">⭐ 50</button>
+                    </div>
+                    <div class="shop-item">
+                        <div class="shop-info">
+                            <b>Глава 7: «Возвращение»</b>
+                            <small>Эпилог через год</small>
+                        </div>
+                        <button class="btn buy" onclick="buyChapter('chapter7', 75)">⭐ 75</button>
+                    </div>
+                    <div class="shop-item">
+                        <div class="shop-info">
+                            <b>Все концовки</b>
+                            <small>Открывает все ветки</small>
+                        </div>
+                        <button class="btn buy" onclick="buyChapter('allEndings', 100)">⭐ 100</button>
+                    </div>
+                </div>
+                <button class="btn" onclick="closeModal('shopModal')">Закрыть</button>
+            </div>
+        </div>
+
+        <!-- Тост-уведомление -->
+        <div id="toast" class="toast"></div>
+
+    </div>
+
+    <script src="scenes.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
