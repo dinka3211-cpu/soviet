@@ -48,9 +48,15 @@ body {
 .splash-bg {
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ffcc00 100%);
+    background-image: url('images/splash.jpg');
     background-size: cover;
-    animation: bgShift 20s infinite alternate;
+    background-position: center;
+    animation: slowZoom 20s infinite alternate;
+}
+
+@keyframes slowZoom {
+    from { transform: scale(1); }
+    to { transform: scale(1.1); }
 }
 
 @keyframes bgShift {
